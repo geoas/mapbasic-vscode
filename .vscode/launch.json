@@ -10,7 +10,7 @@
             "request": "launch",
             "preLaunchTask": "build",
             // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceFolder}/MapBasicHelper/bin/Debug/netcoreapp3.0/MapBasicHelper.dll",
+            "program": "${workspaceFolder}/MapBasicHelper/bin/Debug/net8.0-windows/MapBasicHelper.dll",
             "args": [],
             "cwd": "${workspaceFolder}/MapBasicHelper",
             // For more information about the 'console' field, see https://aka.ms/VSCode-CS-LaunchJson-Console
