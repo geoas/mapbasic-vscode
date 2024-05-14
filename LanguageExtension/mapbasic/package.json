@@ -3,7 +3,7 @@
     "displayName": "MapBasic",
     "description": "MapInfo MapBasic Language",
     "publisher": "mapinfo",
-    "version": "0.0.10",
+    "version": "0.0.11",
     "engines": {
         "vscode": "^1.32.0"
     },
