@@ -9,7 +9,7 @@ For example c:\program files\mapbasic\samples
 You should be able to see syntax highlighting and some snippets.
 
 To use the build task, you currently have to copy the tasks.json file from the language install folder into the .vscode folder in your application folder.
-For example copy %USERPROFILE%\\.vscode\extensions\mapinfo.mapbasic-0.0.10\tasks.json to c:\program files\mapbasic\samples\.vscode\tasks.json
+For example copy %USERPROFILE%\\.vscode\extensions\mapinfo.mapbasic-0.0.13\tasks.json to c:\program files\mapbasic\samples\.vscode\tasks.json
 
 Then you can use the build task ( Ctrl+Shift+B ) to build your project and see any errors in the problems window (Ctrl + Shift +P).
 The build tasks calls mapbasic with either the mapbasic files in your folder, or if you have a project file (.mbp) it calls mapbasic with the modules listed in there and also passes the link flag to mapbasic.

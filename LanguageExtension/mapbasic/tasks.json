@@ -6,7 +6,7 @@
     {
       "label": "build",
       "type": "shell",
-      "command": "${env:USERPROFILE}/.vscode/extensions/mapinfo.mapbasic-0.0.12/Helper/MapBasicHelper.exe",
+      "command": "${env:USERPROFILE}/.vscode/extensions/mapinfo.mapbasic-0.0.13/Helper/MapBasicHelper.exe",
       "args": ["build", "${file}"],
       "presentation": {
         "showReuseMessage": false,
@@ -31,7 +31,7 @@
     {
       "label": "run",
       "type": "shell",
-      "command": "${env:USERPROFILE}/.vscode/extensions/mapinfo.mapbasic-0.0.12/Helper/MapBasicHelper.exe",
+      "command": "${env:USERPROFILE}/.vscode/extensions/mapinfo.mapbasic-0.0.13/Helper/MapBasicHelper.exe",
       "args": ["run", "MapInfo.Application.x64", "${file}"],
       "presentation": {
         "showReuseMessage": false,
@@ -56,7 +56,7 @@
     {
       "label": "buildfolder",
       "type": "shell",
-      "command": "${env:USERPROFILE}/.vscode/extensions/mapinfo.mapbasic-0.0.12/Helper/MapBasicHelper.exe",
+      "command": "${env:USERPROFILE}/.vscode/extensions/mapinfo.mapbasic-0.0.13/Helper/MapBasicHelper.exe",
       "args": ["build", "${fileDirname}"],
       "presentation": {
         "showReuseMessage": false,
@@ -81,7 +81,7 @@
     {
       "label": "runfolder",
       "type": "shell",
-      "command": "${env:USERPROFILE}/.vscode/extensions/mapinfo.mapbasic-0.0.12/Helper/MapBasicHelper.exe",
+      "command": "${env:USERPROFILE}/.vscode/extensions/mapinfo.mapbasic-0.0.13/Helper/MapBasicHelper.exe",
       "args": ["run", "MapInfo.Application.x64", "${fileDirname}"],
       "presentation": {
         "showReuseMessage": false,

@@ -2,7 +2,7 @@
   "profiles": {
     "MapBasicHelper": {
       "commandName": "Project",
-      "commandLineArgs": " run MapInfo.Application.x64 \"D:\\GeoAS App\\MapBasic\\Project\\Project.mbp\""
+      "commandLineArgs": "build \"D:\\GeoAS App\\MapBasic\\GeoTracker\\GeoTracker.mb\""
     }
   }
 }
