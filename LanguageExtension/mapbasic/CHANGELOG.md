@@ -13,3 +13,8 @@ All notable changes to the "mapbasic" extension will be documented in this file.
 - Directory infered from current opend file
 - helper migrated to .net core 8
 - mbx path for execution infered from mbp file
+
+## [0.0.12 AGIS]
+
+- wenn mbp, dann starten des dazugehöirgen mbx
+- runfolder unf buildfolder

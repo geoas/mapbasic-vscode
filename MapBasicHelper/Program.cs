@@ -13,6 +13,10 @@ namespace BuildMapBasicProject
 {
     class Program
     {
+
+        private const string Build = "build";
+        private const string Run = "run";
+
         #region COM Stuff
 
         [System.Runtime.InteropServices.DllImport("ole32.dll")]
@@ -160,115 +164,107 @@ namespace BuildMapBasicProject
         static int Main(string[] args)
         {
             // Validate arguments and show usage message
-            if (args.Length < 2 || !MatchesAny(args[0], ["build", "run"]))
+            if (args.Length < 2 || !MatchesAny(args[0], [Build, Run]))
             {
                 Usage();
                 return 1;
             }
 
             var compiler = new CompileMb();
-            var build = args[0].ToLower() == "build";
+            var verb = args[0].ToLower();
             var progId = "MapInfo.Application.x64";
             var pathToPro = string.Empty;
             var fileToRun = string.Empty;
             foreach (var arg in args)
             {
                 if (arg == args[0]) continue;
-                if (build)
+                switch (verb)
                 {
-                    compiler.FindMapBasic();
-                    if (arg.EndsWith("MapBasic.exe", StringComparison.OrdinalIgnoreCase))
-                    {
+                    case Build when arg.EndsWith("MapBasic.exe", StringComparison.OrdinalIgnoreCase):
                         compiler.MapBasicExe = arg;
-                    }
-                    else
-                    {
+                        break;
+                    case Build when File.Exists(arg):
+                        if (string.IsNullOrEmpty(compiler.MapBasicExe))
+                            compiler.FindMapBasic();
+                        compiler.OutputFolder = Path.GetDirectoryName(arg);
+                        compiler.SourceFiles.Add(arg);
+                        break;
+                    case Build when Directory.Exists(arg):
+                        if (string.IsNullOrEmpty(compiler.MapBasicExe))
+                            compiler.FindMapBasic();
                         compiler.OutputFolder = arg;
-                    }
-                }
-
-                if (!build)
-                {
-                    if (arg.EndsWith("MapInfoPro.exe", StringComparison.OrdinalIgnoreCase))
-                    {
+                        break;
+                    case Build:
+                        Console.WriteLine($"{arg} is not an existing file or folder");
+                        Usage();
+                        return 1;
+                    case Run when arg.EndsWith("MapInfoPro.exe", StringComparison.OrdinalIgnoreCase):
                         pathToPro = arg;
-                    }
-                    else if (arg.EndsWith(".x64", StringComparison.OrdinalIgnoreCase))
-                    {
+                        break;
+                    case Run when arg.EndsWith(".x64", StringComparison.OrdinalIgnoreCase):
                         progId = arg;
-                    }
-                    else
-                    {
-                        if (Directory.Exists(arg))
+                        break;
+                    case Run when Directory.Exists(arg):
+                        fileToRun = FindFileToRun(arg, "*.mbx");
+                        if (string.IsNullOrEmpty(fileToRun)) fileToRun = FindFileToRun(arg, "*.py");
+                        if (string.IsNullOrEmpty(fileToRun)) fileToRun = FindFileToRun(arg, "*.wor");
+                        if (string.IsNullOrEmpty(fileToRun)) fileToRun = FindFileToRunFromMbp(arg, "*.mbp");
+                        if (string.IsNullOrEmpty(fileToRun))
                         {
-                            fileToRun = FindFileToRun(arg, "*.mbx");
-                            if (string.IsNullOrEmpty(fileToRun))
-                            {
-                                fileToRun = FindFileToRun(arg, "*.py");
-                            }
-                            if (string.IsNullOrEmpty(fileToRun))
-                            {
-                                fileToRun = FindFileToRun(arg, "*.wor");
-                            }
-                            if (string.IsNullOrEmpty(fileToRun))        //mbx aus mbp ermitteln
-                            {
-                                var mbp = FindFileToRun(arg, "*.mbp");
-                                var mbxFilePath = Path.Combine(arg, new IniFile(mbp)["Link"]["Application"].Value.FirstOrDefault(""));
-                                if (File.Exists(mbxFilePath)) fileToRun = mbxFilePath;
-                            }
-                            if (string.IsNullOrEmpty(fileToRun))
-                            {
-                                Console.WriteLine($"No files (.mbx, .py, .wor) to run found in folder {arg}");
-                                Usage();
-                                return 1;
-                            }
-                        }
-                        else if (File.Exists(arg))
-                        {
-                            fileToRun = arg;
-                        }
-                        else
-                        {
-                            Console.WriteLine($"{arg} is not an existing file or folder");
+                            Console.WriteLine($"No files (.mbx, .py, .wor) to run found in folder {arg}");
                             Usage();
                             return 1;
                         }
-                    }
+                        break;
+                    case Run when File.Exists(arg):
+                        fileToRun = arg.ToLower().EndsWith(".mbx") ? arg : FindFileToRunFromMbp(Path.GetDirectoryName(arg), $"{Path.GetFileNameWithoutExtension(arg)}.mbp");
+                        break;
+                    case Run:
+                        Console.WriteLine($"{arg} is not an existing file or folder");
+                        Usage();
+                        return 1;
                 }
             }
 
-            if (build)
+            switch (verb)
             {
-                foreach (var file in Directory.EnumerateFiles(compiler.OutputFolder))
-                {
-                    if (file.EndsWith(".mb", StringComparison.OrdinalIgnoreCase))
+                case Build:
                     {
-                        compiler.SourceFiles.Add(file);
-                    }
+                        if (compiler.SourceFiles.Count == 0)
+                        {
+                            if (string.IsNullOrEmpty(compiler.OutputFolder))
+                            {
+                                Console.WriteLine($"no outputfolder defined");
+                                Usage();
+                                return 1;
+                            }
+                            foreach (var file in Directory.EnumerateFiles(compiler.OutputFolder))
+                            {
+                                if (file.EndsWith(".mb", StringComparison.OrdinalIgnoreCase))
+                                    compiler.SourceFiles.Add(file);
 
-                    if (file.EndsWith(".mbp", StringComparison.OrdinalIgnoreCase))
-                    {
-                        compiler.ProjectFile = file;
-                    }
-                }
+                                if (file.EndsWith(".mbp", StringComparison.OrdinalIgnoreCase))
+                                    compiler.ProjectFile = file;
+                            }
+                        }
 
-                if (compiler.Execute())
-                {
-                    Console.WriteLine("No errors found");
+                        if (compiler.Execute())
+                        {
+                            Console.WriteLine("No errors found");
+                            return 0;
+                        }
+
+                        Console.WriteLine("Errors found");
+                        return 1;
+                    }
+                case Run when string.IsNullOrWhiteSpace(fileToRun):
+                    Usage();
+                    return 1;
+                case Run:
+                    return LaunchProgram(progId, pathToPro, $"\"{fileToRun}\"") ? 0 : 1;
+                default:
                     return 0;
-                }
-
-                Console.WriteLine("Errors found");
-                return 1;
             }
-
-            if (string.IsNullOrWhiteSpace(fileToRun))
-            {
-                Usage();
-                return 1;
-            }
-
-            return LaunchProgram(progId, pathToPro, fileToRun) ? 0 : 1;
         }
 
         static string FindFileToRun(string folder, string pattern)
@@ -297,23 +293,22 @@ namespace BuildMapBasicProject
 
             return null;
         }
+
+        static string FindFileToRunFromMbp(string folder, string pattern)
+        {
+            var mbxFilePath = Path.Combine(folder, new IniFile(FindFileToRun(folder, pattern))["Link"]["Application"].Value.FirstOrDefault(""));
+            return File.Exists(mbxFilePath) ? mbxFilePath : "";
+        }
     }
 
     public class CompileMb
     {
         public string MapBasicExe { get; set; }
-        public string MapBasicArguments { get; set; }
+        public string MapBasicArguments { get; set; } = "-NOSPLASH -server -nodde ";
         public string OutputFolder { get; set; }
         public string IntermediateFolder { get; set; }
-
-        public List<string> SourceFiles { get; } = new List<string>();
-
         public string ProjectFile { get; set; }
-
-        public CompileMb()
-        {
-            MapBasicArguments = "-NOSPLASH -server -nodde ";
-        }
+        public List<string> SourceFiles { get; } = [];
 
         public void FindMapBasic()
         {
@@ -321,9 +316,7 @@ namespace BuildMapBasicProject
             {
                 MapBasicExe = Environment.GetEnvironmentVariable("MAPBASICEXE"); // allow for local env to override registry
                 if (File.Exists(MapBasicExe))
-                {
                     return;
-                }
 
                 var key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\mapbasic.exe")?.GetValue(null);
                 if (key != null)

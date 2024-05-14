@@ -1,12 +1,62 @@
 {
-    // See https://go.microsoft.com/fwlink/?LinkId=733558
-    // for the documentation about the tasks.json format
-    "version": "2.0.0",
-    "tasks": [
+  // See https://go.microsoft.com/fwlink/?LinkId=733558
+  // for the documentation about the tasks.json format
+  "version": "2.0.0",
+  "tasks": [
     {
       "label": "build",
       "type": "shell",
-      "command": "${env:USERPROFILE}/.vscode/extensions/mapinfo.mapbasic-0.0.11/Helper/MapBasicHelper.exe",
+      "command": "${env:USERPROFILE}/.vscode/extensions/mapinfo.mapbasic-0.0.12/Helper/MapBasicHelper.exe",
+      "args": ["build", "${file}"],
+      "presentation": {
+        "showReuseMessage": false,
+        "reveal": "silent",
+        "panel": "shared"
+      },
+      "problemMatcher": {
+        "owner": "mapbasic",
+        "fileLocation": ["relative", "${file}"],
+        "pattern": {
+          "regexp": "^\\((.*):(\\d+)\\)\\s*(.*)$",
+          "file": 1,
+          "line": 2,
+          "message": 3
+        }
+      },
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
+      "label": "run",
+      "type": "shell",
+      "command": "${env:USERPROFILE}/.vscode/extensions/mapinfo.mapbasic-0.0.12/Helper/MapBasicHelper.exe",
+      "args": ["run", "MapInfo.Application.x64", "${file}"],
+      "presentation": {
+        "showReuseMessage": false,
+        "reveal": "silent",
+        "panel": "shared"
+      },
+      "problemMatcher": {
+        "owner": "mapbasic",
+        "fileLocation": ["relative", "${file}"],
+        "pattern": {
+          "regexp": "^\\((.*):(\\d+)\\)\\s*(.*)$",
+          "file": 1,
+          "line": 2,
+          "message": 3
+        }
+      },
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    }
+    {
+      "label": "buildfolder",
+      "type": "shell",
+      "command": "${env:USERPROFILE}/.vscode/extensions/mapinfo.mapbasic-0.0.12/Helper/MapBasicHelper.exe",
       "args": ["build", "${fileDirname}"],
       "presentation": {
         "showReuseMessage": false,
@@ -29,9 +79,9 @@
       }
     },
     {
-      "label": "run",
+      "label": "runfolder",
       "type": "shell",
-      "command": "${env:USERPROFILE}/.vscode/extensions/mapinfo.mapbasic-0.0.11/Helper/MapBasicHelper.exe",
+      "command": "${env:USERPROFILE}/.vscode/extensions/mapinfo.mapbasic-0.0.12/Helper/MapBasicHelper.exe",
       "args": ["run", "MapInfo.Application.x64", "${fileDirname}"],
       "presentation": {
         "showReuseMessage": false,
@@ -54,5 +104,4 @@
       }
     }
   ]
-    ]
 }
