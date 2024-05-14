@@ -210,6 +210,12 @@ namespace BuildMapBasicProject
                             {
                                 fileToRun = FindFileToRun(arg, "*.wor");
                             }
+                            if (string.IsNullOrEmpty(fileToRun))        //mbx aus mbp ermitteln
+                            {
+                                var mbp = FindFileToRun(arg, "*.mbp");
+                                var mbxFilePath = Path.Combine(arg, new IniFile(mbp)["Link"]["Application"].Value.FirstOrDefault(""));
+                                if (File.Exists(mbxFilePath)) fileToRun = mbxFilePath;
+                            }
                             if (string.IsNullOrEmpty(fileToRun))
                             {
                                 Console.WriteLine($"No files (.mbx, .py, .wor) to run found in folder {arg}");
@@ -396,12 +402,12 @@ namespace BuildMapBasicProject
             foreach (var item in SourceFiles)
             {
                 if (item == null) continue;
-                startInfo.Arguments += " -d " + item;
+                startInfo.Arguments += $" -d \"{item}\"";
             }
 
             if (!string.IsNullOrWhiteSpace(ProjectFile))
             {
-                startInfo.Arguments += " -l " + ProjectFile;
+                startInfo.Arguments += $" -l \"{ProjectFile}\"";
             }
             try
             {
@@ -412,9 +418,7 @@ namespace BuildMapBasicProject
                     exeProcess?.WaitForExit();
                 }
 
-
                 errors = ProcessErrors(OutputFolder);
-
             }
             catch (Exception)
             {
